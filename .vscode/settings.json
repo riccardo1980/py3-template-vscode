@@ -1,0 +1,7 @@
+{
+    "python.pythonPath": "/home/ricky/Envs/py3-template-vscode/bin/python3",
+    "python.linting.pylintEnabled": true,
+    "python.linting.pycodestyleEnabled": true,
+    "python.autoComplete.extraPaths": ["${workspaceFolder}/."],
+    "python.autoComplete.addBrackets": true
+}
