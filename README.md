@@ -12,7 +12,7 @@ pip install -r requirements.txt
     - whether the editor lists as an error the absence of a newline at the end
 ![problems][problems]
 
-4. [Optional] For ipython notebook support (with <ENV> as yoyr virtual environment name)  
+4. [Optional] For ipython notebook support (with \<ENV\> as yoyr virtual environment name)  
 ```bash
 pip install notebook
 ipython kernel install --user --name=<ENV>
