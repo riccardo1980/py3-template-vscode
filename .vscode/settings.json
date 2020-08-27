@@ -4,5 +4,6 @@
     "python.autoComplete.addBrackets": true,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
-    "python.languageServer": "Microsoft"
+    "python.languageServer": "Microsoft",
+    "editor.rulers": [80]
 }
