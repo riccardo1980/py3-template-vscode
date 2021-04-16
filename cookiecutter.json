@@ -1,0 +1,8 @@
+{
+  "project_folder" : "proto_project",
+  "package_name" : "proto",
+  "python_env_base" : "/home/ricky/Envs",
+  "python_env" : "proto",
+  "python_interpreter" : "bin/python3"
+}
+
