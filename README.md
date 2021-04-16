@@ -4,7 +4,7 @@
 ![hinting][hinting]
 ### flake8 linting
 ![problems][problems]
-## Install
+## Configure with cookiecutter
 ```bash
 cookiecutter https://github.com/riccardo1980/py3-template-vscode.git
 ```
@@ -16,6 +16,11 @@ Parameters meaning:
 - __python_interpreter__: your virtualenv interpreter
 
 Basically, you must be sure that <__python_env_base__>/<__python_env__>/<__python_interpreter__> is the full path of the interpreter you are going to use.
+
+## Add required packages
+- activate your virtual env
+- install packages specified in requirements-test.txt
+
 ## [Optional] Install ipython notebook support
 Activate yoyr virtualenv and issue the following command, with \<ENV\> as your virtual environment name:
 ```bash
