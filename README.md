@@ -1,4 +1,4 @@
-# cookiecutter template for basic python development on VSCode
+# cookiecutter template for basic VSCode Python devel
 ## What you'll get
 ### docstring informations on hover
 ![hinting][hinting]
