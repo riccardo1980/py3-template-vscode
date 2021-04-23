@@ -1,4 +1,4 @@
-from deer import base
+from {{cookiecutter.package_name}} import base
 
 
 def test_base():

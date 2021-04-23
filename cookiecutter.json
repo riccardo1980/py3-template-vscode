@@ -1,8 +1,6 @@
 {
-  "project_folder" : "proto_project",
+  "project_slug" : "project_slug",
   "package_name" : "proto",
-  "python_env_base" : "/home/ricky/Envs",
-  "python_env" : "proto",
-  "python_interpreter" : "bin/python3"
+  "virtualenv_name": ".venv"
 }
 
