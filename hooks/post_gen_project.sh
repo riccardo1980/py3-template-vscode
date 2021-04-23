@@ -23,6 +23,13 @@ then
   echo $VIRTUALENV_NAME >> .gitignore
 fi
 
+log_msg "Adding virtualenv folder to .flake8 exclude"
+
+cat > .flake8 << EOF
+[flake8]
+exclude = $VIRTUALENV_NAME
+EOF
+
 log_msg "Configuring version control"
 git init && git add . && git commit -m "first commit"
 git branch -m main
