@@ -4,7 +4,7 @@ set -e
 
 VIRTUALENV_NAME={{cookiecutter.virtualenv_name}}
 TEST_REQ_FILE="requirements-test.txt"
-
+GITIGNORE_TEMPLATE=.gitignore.template
 
 log_msg(){
   echo -e "$1"
@@ -16,6 +16,9 @@ python3 -m venv $VIRTUALENV_NAME
 log_msg "Adding test requirements" 
 source $VIRTUALENV_NAME/bin/activate
 pip3 install -r $TEST_REQ_FILE
+  
+log_msg "Creating .gitignore from template"
+mv $GITIGNORE_TEMPLATE .gitignore
 
 if ! grep -Fxq $VIRTUALENV_NAME .gitignore 
 then
