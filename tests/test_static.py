@@ -6,7 +6,8 @@ import json
 from cookiecutter.main import cookiecutter
 
 TEMPLATE_DIRECTORY = str(pathlib.Path(__file__).parent.parent)
-LINTER_FILE = '.flake8'
+LINTER_CONFIG = '.flake8'
+GITIGNORE = '.gitignore'
 
 
 @pytest.fixture(scope='session')
@@ -93,11 +94,14 @@ def test_venv_ignored_in_linter(create_cookie, default_values):
     config = configparser.ConfigParser()
     config.read(os.path.join(create_cookie,
                              default_values['project_slug'],
-                             LINTER_FILE))
+                             LINTER_CONFIG))
 
     assert default_values['virtualenv_name'] in config['flake8']['exclude']
 
 
-def test_venv_ignored_in_gitignore(content_list, default_values):
-    lines = open('.gitignore').read().split('\n')
+def test_venv_ignored_in_gitignore(create_cookie, default_values):
+    with open(os.path.join(create_cookie,
+                           default_values['project_slug'],
+                           GITIGNORE)) as f:
+        lines = f.read().split('\n')
     assert default_values['virtualenv_name'] in lines
