@@ -82,7 +82,7 @@ def linter_config(linter_config_file: str,
 def configure_version_control(branch_name='main',
                               msg='first commit'):
     subprocess.check_call(['git', 'init'])
-    subprocess.check_call(['git', 'add'])
+    subprocess.check_call(['git', 'add', '.'])
     subprocess.check_call(['git', 'commit', '-m', msg])
     subprocess.check_call(['git', 'branch', '-m', branch_name])
 
