@@ -1,6 +1,9 @@
 {
   "project_slug" : "project_slug",
   "package_name" : "proto",
-  "virtualenv_name": ".venv"
+  "virtualenv_name": ".venv",
+  "configure_version_control": "n",
+  "upgrade_pip": "y",
+  "ipython_support": "n"
 }
 

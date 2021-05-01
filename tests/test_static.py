@@ -62,9 +62,6 @@ def content_list(create_cookie):
     return content
 
 
-project_slug = 'project_slug'
-
-
 def test_default_root_folder(content_list, default_values):
     assert default_values['project_slug'] in content_list
 
@@ -76,7 +73,21 @@ def test_default_package_folder(content_list, default_values):
     ) in content_list
 
 
-def test_default_venv_folder(content_list, default_values):
+def test_default_pip_in_venv_folder(content_list, default_values):
+    interpreters = [
+        os.path.join(
+            default_values['project_slug'],
+            default_values['virtualenv_name'],
+            'bin',
+            ii
+        ) for ii in ['pip', 'pip3']
+    ]
+
+    for item in interpreters:
+        assert item in content_list
+
+
+def test_default_interpreter_in_venv_folder(content_list, default_values):
     interpreters = [
         os.path.join(
             default_values['project_slug'],
@@ -84,6 +95,19 @@ def test_default_venv_folder(content_list, default_values):
             'bin',
             ii
         ) for ii in ['python', 'python3']
+    ]
+
+    for item in interpreters:
+        assert item in content_list
+
+def test_default_test_tools_in_venv_folder(content_list, default_values):
+    interpreters = [
+        os.path.join(
+            default_values['project_slug'],
+            default_values['virtualenv_name'],
+            'bin',
+            ii
+        ) for ii in ['pytest', 'flake8']
     ]
 
     for item in interpreters:

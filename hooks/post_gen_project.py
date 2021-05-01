@@ -6,6 +6,13 @@ import venv
 from typing import List
 from pathlib import Path
 
+def str2bool(v):
+    return v.lower() in ("yes", 'true', 'si', 'y', 's', '1')
+
+flag_upgrade_pip = str2bool('{{cookiecutter.upgrade_pip}}')
+flag_configure_version_control = str2bool('{{cookiecutter.configure_version_control}}')
+flag_ipython_support = str2bool('{{cookiecutter.ipython_support}}')
+
 
 class ExtendedEnvBuilder(venv.EnvBuilder):
     """
@@ -14,6 +21,8 @@ class ExtendedEnvBuilder(venv.EnvBuilder):
     def __init__(self, *args, **kwargs):
         self.requirements_files = kwargs.pop('requirements_files',
                                              ['requirements.txt'])
+        self.upgrade_pip = kwargs.pop('upgrade_pip', True)
+        self.ipython_support = kwargs.pop('ipython_support', False)                                     
         super().__init__(*args, **kwargs)
 
     def post_setup(self, context):
@@ -32,10 +41,17 @@ class ExtendedEnvBuilder(venv.EnvBuilder):
 
         """
 
+        binpath = Path(context.bin_path).joinpath("python3")
+        ipythonpath = Path(context.bin_path).joinpath("ipython")
+        # print("PYTHONPATH: ", binpath)
         # print('WILL INSTALL packages from: ', self.requirements_files)
 
-        binpath = Path(context.bin_path).joinpath("python3")
-        # print("PYTHONPATH: ", binpath)
+        # upgrade pip
+        if self.upgrade_pip:
+            subprocess.check_call(
+                [binpath, '-m', 'pip', 'install', "--prefix",
+                    context.env_dir, '--upgrade', 'pip']
+            )
 
         for req in self.requirements_files:
             subprocess.check_call(
@@ -43,14 +59,23 @@ class ExtendedEnvBuilder(venv.EnvBuilder):
                  context.env_dir, '-r', req]
             )
 
+        if self.ipython_support:
+            subprocess.check_call(
+                [binpath, '-m', 'pip', 'install', 'notebook']
+            )
+            subprocess.check_call(
+                [ipythonpath, 'kernel', 'install', 
+                '--user', '--name='+context.env_name]
+            )
 
-def venv_create(venv_home: str, requirements_files: List[str]):
+
+def venv_create(venv_home: str, **kwargs):
     """
         create virtualenv
     """
     builder = ExtendedEnvBuilder(
         with_pip=True,
-        requirements_files=requirements_files
+        **kwargs
         )
     builder.create(venv_home)
 
@@ -87,7 +112,7 @@ def configure_version_control(branch_name='main',
     subprocess.check_call(['git', 'branch', '-m', branch_name])
 
 
-def runme():
+def do_post_hook():
 
     LINTER_CONFIG = '.flake8'
     GITIGNORE_TEMPLATE = '.gitignore.template'
@@ -97,27 +122,33 @@ def runme():
     print('Running post-gen hook')
 
     try:
-        print('{}: create virtualenv'.format(__file__))
+        print('{}: create virtualenv'.format(__name__))
 
         venv_create(venv_home=VENV_HOME,
-                    requirements_files=['requirements-test.txt'])
+                    requirements_files=['requirements-test.txt'],
+                    upgrade_pip=flag_upgrade_pip,
+                    ipython_support=flag_ipython_support)
 
+        print('{}: configure gitignore'.format(__name__))
         gitignore_config(GITIGNORE_TEMPLATE,
                          GITIGNORE,
                          [VENV_HOME])
 
         # create .flake8 configuration
         # add virtualenv folder to exclude list
+        print('{}: configure linter'.format(__name__))
         linter_config(linter_config_file=LINTER_CONFIG,
                       linter_ignore=[VENV_HOME])
 
         # activate version control
         # change branch name: master to main
-        configure_version_control()
+        if flag_configure_version_control:
+            print('{}: configure git'.format(__name__))
+            configure_version_control()
 
     except Exception as e:
         print('{}: exception caught\nexiting\n{}'.format(__file__, e))
         sys.exit(-1)
 
 
-runme()
+do_post_hook()
