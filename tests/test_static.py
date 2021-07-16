@@ -6,7 +6,6 @@ import json
 from cookiecutter.main import cookiecutter
 
 TEMPLATE_DIRECTORY = str(pathlib.Path(__file__).parent.parent)
-LINTER_CONFIG = '.flake8'
 GITIGNORE = '.gitignore'
 
 
@@ -107,20 +106,21 @@ def test_default_test_tools_in_venv_folder(content_list, default_values):
             default_values['virtualenv_name'],
             'bin',
             ii
-        ) for ii in ['pytest', 'flake8']
+        ) for ii in ['pytest']
     ]
 
     for item in interpreters:
         assert item in content_list
 
 
-def test_venv_ignored_in_linter(create_cookie, default_values):
-    config = configparser.ConfigParser()
-    config.read(os.path.join(create_cookie,
-                             default_values['project_slug'],
-                             LINTER_CONFIG))
+# LINTER_CONFIG = '.flake8'
+# def test_venv_ignored_in_linter(create_cookie, default_values):
+#     config = configparser.ConfigParser()
+#     config.read(os.path.join(create_cookie,
+#                              default_values['project_slug'],
+#                              LINTER_CONFIG))
 
-    assert default_values['virtualenv_name'] in config['flake8']['exclude']
+#     assert default_values['virtualenv_name'] in config['flake8']['exclude']
 
 
 def test_venv_ignored_in_gitignore(create_cookie, default_values):

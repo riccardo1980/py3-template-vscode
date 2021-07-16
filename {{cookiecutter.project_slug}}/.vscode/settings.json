@@ -3,16 +3,12 @@
     "python.languageServer": "Pylance",
     "editor.rulers": [ 80 ],
     "python.analysis.extraPaths": [
-        "${workspaceFolder}/{{cookiecutter.project_slug}}/{{coookiecutter.package_name}}"
+        "${workspaceFolder}"
     ],
     "python.analysis.completeFunctionParens": true,
     "python.autoComplete.extraPaths": [
-        "${workspaceFolder}/{{cookiecutter.project_slug}}/{{coookiecutter.package_name}}"
+        "${workspaceFolder}"
     ],
-    "python.autoComplete.addBrackets": true,
-    
-    "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true,
-    
+    "python.autoComplete.addBrackets": true
 }
 

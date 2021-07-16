@@ -1,4 +1,3 @@
-import configparser
 import os
 import sys
 import subprocess
@@ -9,9 +8,10 @@ from pathlib import Path
 def str2bool(v):
     return v.lower() in ("yes", 'true', 'si', 'y', 's', '1')
 
-flag_upgrade_pip = str2bool('{{cookiecutter.upgrade_pip}}')
-flag_configure_version_control = str2bool('{{cookiecutter.configure_version_control}}')
-flag_ipython_support = str2bool('{{cookiecutter.ipython_support}}')
+FLAG_UPGRADE_PIP = str2bool('{{cookiecutter.upgrade_pip}}')
+FLAG_CONFIGURE_VERSION_CONTROL = str2bool('{{cookiecutter.configure_version_control}}')
+FLAG_IPYTHON_SUPPORT = str2bool('{{cookiecutter.ipython_support}}')
+CHOSEN_LINTER = '{{cookiecutter.linter}}'
 
 
 class ExtendedEnvBuilder(venv.EnvBuilder):
@@ -94,14 +94,10 @@ def gitignore_config(gitignore_template: str,
 
 
 def linter_config(linter_config_file: str,
-                  linter_ignore: List[str]):
+                  linter_config_string: str):
 
-    config = configparser.ConfigParser()
-    config['flake8'] = {
-        'exclude': ','.join(linter_ignore)
-    }
-    with open(linter_config_file, 'w') as configfile:
-        config.write(configfile)
+    with open(linter_config_file, 'w') as f:
+        f.write(linter_config_string)
 
 
 def configure_version_control(branch_name='main',
@@ -114,35 +110,96 @@ def configure_version_control(branch_name='main',
 
 def do_post_hook():
 
-    LINTER_CONFIG = '.flake8'
     GITIGNORE_TEMPLATE = '.gitignore.template'
     GITIGNORE = '.gitignore'
     VENV_HOME = '{{cookiecutter.virtualenv_name}}'
 
+    LINTER_SETTINGS = {
+        'pylint': {
+            'prerequisites': ['pylint==2.9.3'],
+            'config_filename': '.pylintrc',
+            'config_content': '\n'.join(
+                [
+                    '[master]',
+                    'extension-pkg-whitelist=pydantic'
+                ]
+            ),
+            'vscode-config': {
+                    "python.linting.enabled": True,
+                    "python.linting.pylintEnabled": True,
+                    "python.linting.pylintArgs": [
+                        "--rcfile=${workspaceFolder}/.pylintrc",
+                        "--init-hook",
+                        "import sys; sys.path.insert(0, '${workspaceFolder}')"
+                    ]
+                }
+        },
+        'flake8' : {
+            'prerequisites': ['flake8==3.9.0'],
+            'config_filename': '.flake8',
+            'config_content': '\n'.join(
+                [
+                'ignore: {{cookiecutter.virtualenv_name}}'
+                ]
+            ),
+            'vscode-config': {
+                "python.linting.enabled": True,
+                "python.linting.flake8Enabled": True
+            }
+        }
+    }
+
+
     print('Running post-gen hook')
 
     try:
+        if CHOSEN_LINTER not in ['pylint', 'flake8']:
+            raise Exception('linter not supported')
+
+        ### PREREQUISITES SETUP
+        with open('requirements-test.txt', 'a') as f:
+            for item in LINTER_SETTINGS[CHOSEN_LINTER]['prerequisites']:
+                f.write(item)
+
+        ### VIRTUALENV
         print('{}: create virtualenv'.format(__name__))
 
         venv_create(venv_home=VENV_HOME,
                     requirements_files=['requirements-test.txt'],
-                    upgrade_pip=flag_upgrade_pip,
-                    ipython_support=flag_ipython_support)
+                    upgrade_pip=FLAG_UPGRADE_PIP,
+                    ipython_support=FLAG_IPYTHON_SUPPORT)
 
         print('{}: configure gitignore'.format(__name__))
         gitignore_config(GITIGNORE_TEMPLATE,
                          GITIGNORE,
                          [VENV_HOME])
 
-        # create .flake8 configuration
+        ### LINTER CONFIGURATION
+        # create linter configuration
         # add virtualenv folder to exclude list
         print('{}: configure linter'.format(__name__))
-        linter_config(linter_config_file=LINTER_CONFIG,
-                      linter_ignore=[VENV_HOME])
+        linter_config(
+            LINTER_SETTINGS[CHOSEN_LINTER]['config_filename'],
+            linter_config_string=LINTER_SETTINGS[CHOSEN_LINTER]['config_content']
+         )
 
+        ### VSCODE CONFIGURATION
+        print('{}: configure vscode'.format(__name__))
+        import json
+        VSCODE_CONFIG_FILE='.vscode/settings.json'
+
+        with open(VSCODE_CONFIG_FILE, "r") as f:
+            vscode_minimal_config = json.load(f)
+
+        vscode_config = { **vscode_minimal_config, **LINTER_SETTINGS[CHOSEN_LINTER]['vscode-config']}
+
+        with open(VSCODE_CONFIG_FILE, 'w') as f:
+            json.dump(vscode_config, f, indent=4)
+
+        # ### VERSION CONTROL SETTINGS
         # activate version control
         # change branch name: master to main
-        if flag_configure_version_control:
+        if FLAG_CONFIGURE_VERSION_CONTROL:
             print('{}: configure git'.format(__name__))
             configure_version_control()
 

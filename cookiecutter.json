@@ -4,6 +4,7 @@
   "virtualenv_name": ".venv",
   "configure_version_control": "n",
   "upgrade_pip": "y",
-  "ipython_support": "n"
+  "ipython_support": "n",
+  "linter": "pylint"
 }
 

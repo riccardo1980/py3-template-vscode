@@ -15,7 +15,11 @@ cookiecutter https://github.com/riccardo1980/py3-template-vscode.git
 Parameters meaning:
 - __project_slug__: base folder of your project
 - __package_name__: package name you are going to develop (this will set both folder name and import statement on tests)
-- __virtualenv_name__: name of virtualenv that will be created in project root 
+- __virtualenv_name__: name of virtualenv that will be created in project root
+- __configure_version_control__: git init and main branch creation are performed
+- __upgrade_pip__: pip is upgraded to latest version
+- __ipython_support__: support for ipython notebooks
+- __linter__: linter configuration: one between flake8 or pylint 
 
 ## [Optional] Install ipython notebook support
 Activate your virtualenv and issue the following command, with \<ENV\> as your virtual environment name:
@@ -31,7 +35,7 @@ ipython kernel install --user --name=.venv
 
 ![hinting][hinting]
 
-### flake8 linting
+### flake8/pylint linting
 
 ![problems][problems]
 
