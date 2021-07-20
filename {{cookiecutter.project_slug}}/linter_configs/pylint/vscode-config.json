@@ -1,0 +1,9 @@
+{
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--rcfile=${workspaceFolder}/.pylintrc",
+        "--init-hook",
+        "import sys; sys.path.insert(0, '${workspaceFolder}')"
+    ]
+}

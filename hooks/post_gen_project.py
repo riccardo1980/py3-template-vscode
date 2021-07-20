@@ -1,9 +1,11 @@
 import os
+import json
 import sys
 import subprocess
 import venv
 from typing import List
 from pathlib import Path
+
 
 def str2bool(v):
     return v.lower() in ("yes", 'true', 'si', 'y', 's', '1')
@@ -93,13 +95,6 @@ def gitignore_config(gitignore_template: str,
             f.write('{}\n'.format(item))
 
 
-def linter_config(linter_config_file: str,
-                  linter_config_string: str):
-
-    with open(linter_config_file, 'w') as f:
-        f.write(linter_config_string)
-
-
 def configure_version_control(branch_name='main',
                               msg='first commit'):
     subprocess.check_call(['git', 'init'])
@@ -113,53 +108,56 @@ def do_post_hook():
     GITIGNORE_TEMPLATE = '.gitignore.template'
     GITIGNORE = '.gitignore'
     VENV_HOME = '{{cookiecutter.virtualenv_name}}'
-
-    LINTER_SETTINGS = {
-        'pylint': {
-            'prerequisites': ['pylint==2.9.3'],
-            'config_filename': '.pylintrc',
-            'config_content': '\n'.join(
-                [
-                    '[master]',
-                    'extension-pkg-whitelist=pydantic'
-                ]
-            ),
-            'vscode-config': {
-                    "python.linting.enabled": True,
-                    "python.linting.pylintEnabled": True,
-                    "python.linting.pylintArgs": [
-                        "--rcfile=${workspaceFolder}/.pylintrc",
-                        "--init-hook",
-                        "import sys; sys.path.insert(0, '${workspaceFolder}')"
-                    ]
-                }
-        },
-        'flake8' : {
-            'prerequisites': ['flake8==3.9.0'],
-            'config_filename': '.flake8',
-            'config_content': '\n'.join(
-                [
-                'ignore: {{cookiecutter.virtualenv_name}}'
-                ]
-            ),
-            'vscode-config': {
-                "python.linting.enabled": True,
-                "python.linting.flake8Enabled": True
-            }
-        }
-    }
-
+    VSCODE_CONFIG_FILE='.vscode/settings.json'
+    LINTER_CONFIG_FOLDER = 'linter_configs'
 
     print('Running post-gen hook')
 
-    try:
-        if CHOSEN_LINTER not in ['pylint', 'flake8']:
+    def linter_configure(linter, config_folder):
+        supported_linters = [ item.name for item in os.scandir(config_folder) if item.is_dir()]
+        if linter not in supported_linters:
             raise Exception('linter not supported')
+        
+        config_file = os.path.join(
+            LINTER_CONFIG_FOLDER, linter,
+            'linter-config.json')
+        linter_requirements_file = os.path.join(
+            LINTER_CONFIG_FOLDER, linter,
+            'requirements-test.txt')
+        linter_config_file = os.path.join(
+            LINTER_CONFIG_FOLDER, linter,
+            'config.txt')
+        vscode_linter_config_file = os.path.join(
+            LINTER_CONFIG_FOLDER, linter,
+            'vscode-config.json')
 
+        with open(linter_requirements_file) as f:
+            linter_requirements = f.read().split()
+
+        with open(config_file) as fd:
+            config = json.load(fd)
+        
+        with open(config['config_filename'], 'w') as fd:
+            with open(linter_config_file, 'r') as fs:
+                fd.write(fs.read())
+
+        with open(vscode_linter_config_file, "r") as f:
+            vscode_linter_config = json.load(f)
+
+        return linter_requirements, vscode_linter_config
+
+    try:
+        ### LINTER CONFIGURATION
+        # create linter configuration
+        # add virtualenv folder to exclude list
+        print('{}: configure linter'.format(__name__))
+        linter_requirements, vscode_linter_config = linter_configure(CHOSEN_LINTER, LINTER_CONFIG_FOLDER)
+
+        
         ### PREREQUISITES SETUP
-        with open('requirements-test.txt', 'a') as f:
-            for item in LINTER_SETTINGS[CHOSEN_LINTER]['prerequisites']:
-                f.write(item)
+        with open('requirements-test.txt', 'a') as fd:
+            for item in linter_requirements:
+                fd.write(item)
 
         ### VIRTUALENV
         print('{}: create virtualenv'.format(__name__))
@@ -174,24 +172,13 @@ def do_post_hook():
                          GITIGNORE,
                          [VENV_HOME])
 
-        ### LINTER CONFIGURATION
-        # create linter configuration
-        # add virtualenv folder to exclude list
-        print('{}: configure linter'.format(__name__))
-        linter_config(
-            LINTER_SETTINGS[CHOSEN_LINTER]['config_filename'],
-            linter_config_string=LINTER_SETTINGS[CHOSEN_LINTER]['config_content']
-         )
-
         ### VSCODE CONFIGURATION
         print('{}: configure vscode'.format(__name__))
-        import json
-        VSCODE_CONFIG_FILE='.vscode/settings.json'
 
         with open(VSCODE_CONFIG_FILE, "r") as f:
             vscode_minimal_config = json.load(f)
 
-        vscode_config = { **vscode_minimal_config, **LINTER_SETTINGS[CHOSEN_LINTER]['vscode-config']}
+        vscode_config = { **vscode_minimal_config, **vscode_linter_config}
 
         with open(VSCODE_CONFIG_FILE, 'w') as f:
             json.dump(vscode_config, f, indent=4)
