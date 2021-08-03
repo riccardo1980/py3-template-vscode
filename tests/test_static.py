@@ -1,8 +1,7 @@
-import configparser
 import os
 import pathlib
-import pytest
 import json
+import pytest
 from cookiecutter.main import cookiecutter
 
 TEMPLATE_DIRECTORY = str(pathlib.Path(__file__).parent.parent)
@@ -84,7 +83,6 @@ def test_default_pip_in_venv_folder(content_list, default_values):
 
     for item in interpreters:
         assert item in content_list
-
 
 def test_default_interpreter_in_venv_folder(content_list, default_values):
     interpreters = [

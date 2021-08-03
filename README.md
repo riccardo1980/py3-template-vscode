@@ -19,7 +19,8 @@ Parameters meaning:
 - __configure_version_control__: git init and main branch creation are performed
 - __upgrade_pip__: pip is upgraded to latest version
 - __ipython_support__: support for ipython notebooks
-- __linter__: linter configuration: one between flake8 or pylint 
+- __linter__: linter configuration: one between flake8 or pylint (no for no linter)
+- __formatter__: formatter configuration: black (no for no formatter) 
 
 ## [Optional] Install ipython notebook support
 Activate your virtualenv and issue the following command, with \<ENV\> as your virtual environment name:
