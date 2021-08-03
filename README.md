@@ -19,10 +19,25 @@ Parameters meaning:
 - __configure_version_control__: git init and main branch creation are performed
 - __upgrade_pip__: pip is upgraded to latest version
 - __ipython_support__: support for ipython notebooks
-- __linter__: linter configuration: one between flake8 or pylint (no for no linter)
-- __formatter__: formatter configuration: black (no for no formatter) 
+- __linter__: linter configuration: one between 'flake8' or 'pylint' ('no' for no linter)
+- __formatter__: formatter configuration: 'black' ('no' for no formatter) 
+
+
+## Extend to further tools
+Each tool is described with a folder inside `{{cookiecutter.project_slug}}/tools_config`: folder name must be equal to the tool.
+A number of object must be present in the folder:
+- __requirements.txt__: a text file with requirements, one per line
+- __vscode_config.json__: a JSON formatted text file, containing vscode configuratin for that tool
+- [OPTIONAL] __config_files__: a folder: each file in first level will be copied in root project
+
+In order to support a tool you need to create a folder in `{{cookiecutter.project_slug}}/tools_config` matching the name of the tool.
+
+If a different tool kind (other than currently supported __formatter__ and __linter__) is needed, you need also to:
+1. create a variable `cookiecutter.json` that will hold the new kind
+2. add the variable in `tools_list` of function `do_post_hook()` of `hooks/post_gen_project.py`    
 
 ## [Optional] Install ipython notebook support
+If you have chosen to not support ipython kernel at cookie creation, you can still install and configure kernels at a later stage.
 Activate your virtualenv and issue the following command, with \<ENV\> as your virtual environment name:
 ```bash
 source .venv/bin/activate

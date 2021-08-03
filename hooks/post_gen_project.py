@@ -179,11 +179,13 @@ class ToolConfig:
         """
         config = cls()
 
-        config.tool_config_files = [
-            os.path.join(config_folder, "config_files", item.name)
-            for item in os.scandir(os.path.join(config_folder, "config_files"))
-            if item.is_file()
-        ]
+        config_files_folder = os.path.join(config_folder, "config_files")
+        if os.path.isdir(config_files_folder): 
+            config.tool_config_files = [
+                os.path.join(config_folder, "config_files", item.name)
+                for item in os.scandir(os.path.join(config_folder, "config_files"))
+                if item.is_file()
+            ]
 
         with open(os.path.join(config_folder, "requirements.txt"), "r") as f:
             config.requirements.extend(f.read().split())
