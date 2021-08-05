@@ -180,10 +180,12 @@ class ToolConfig:
         config = cls()
 
         config_files_folder = os.path.join(config_folder, "config_files")
-        if os.path.isdir(config_files_folder): 
+        if os.path.isdir(config_files_folder):
             config.tool_config_files = [
                 os.path.join(config_folder, "config_files", item.name)
-                for item in os.scandir(os.path.join(config_folder, "config_files"))
+                for item in os.scandir(
+                    os.path.join(config_folder, "config_files")
+                )
                 if item.is_file()
             ]
 
@@ -326,6 +328,11 @@ def do_post_hook():
     except Exception as e:
         print("{}: exception caught\nexiting\n{}".format(__name__, e))
         sys.exit(-1)
+
+    ### CLEANUP
+    # remove templates
+    print("{}: cleanup".format(__name__))
+    shutil.rmtree(tools_config_folder)
 
 
 do_post_hook()
