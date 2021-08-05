@@ -6,6 +6,7 @@
   "upgrade_pip": "y",
   "ipython_support": "n",
   "linter": "pylint",
-  "formatter": "black"
+  "formatter": "black",
+  "import_sorter": "isort"
 }
 

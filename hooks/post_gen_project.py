@@ -1,13 +1,15 @@
 from __future__ import annotations
-import os
-import json
-import sys
-import subprocess
-import shutil
-import venv
+
 import copy
-from typing import Any, List, Type, Dict, TypeVar
+import json
+import os
+import shutil
+import subprocess
+import sys
+import venv
 from pathlib import Path
+from typing import Any, Dict, List, Type, TypeVar
+
 
 def str2bool(var: str) -> bool:
     """
@@ -131,7 +133,9 @@ def gitignore_config(gitignore_template: str, ignore_list: List[str]) -> None:
             fd.write("{}\n".format(item))
 
 
-def configure_version_control(branch_name: str="main", msg: str="first commit") -> None:
+def configure_version_control(
+    branch_name: str = "main", msg: str = "first commit"
+) -> None:
     """
     Configure git version control
 
@@ -160,9 +164,10 @@ class ToolConfig:
         self.requirements: List[str] = []
 
         # dict containing tool settings
-        self.vscode_settings: Dict[str,Any] = {}
+        self.vscode_settings: Dict[str, Any] = {}
 
-    _T = TypeVar("_T", bound='ToolConfig')
+    _T = TypeVar("_T", bound="ToolConfig")
+
     @classmethod
     def from_folder(cls: Type[_T], config_folder) -> _T:
         """
@@ -254,12 +259,13 @@ def do_post_hook() -> None:
     do_support_ipython = str2bool("{{cookiecutter.ipython_support}}")
     chosen_linter = "{{cookiecutter.linter}}"
     chosen_formatter = "{{cookiecutter.formatter}}"
+    chosen_include_sorter = "{{cookiecutter.import_sorter}}"
 
     supported_tools = [
         item.name for item in os.scandir(tools_config_folder) if item.is_dir()
     ]
 
-    tools_list = [chosen_linter, chosen_formatter]
+    tools_list = [chosen_linter, chosen_formatter, chosen_include_sorter]
     tools_list = list(filter(lambda x: x.lower() not in ["", "no"], tools_list))
 
     print("{}: running post-gen hook".format(__name__))

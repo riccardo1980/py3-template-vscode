@@ -32,7 +32,7 @@ A number of object must be present in the folder:
 
 In order to support a tool you need to create a folder in `{{cookiecutter.project_slug}}/tools_config` matching the name of the tool.
 
-If a different tool kind (other than currently supported __formatter__ and __linter__) is needed, you need also to:
+If a different tool kind (other than currently supported __formatter__, __linter__, __import_sorter__) is needed, you need also to:
 1. create a variable `cookiecutter.json` that will hold the new kind
 2. add the variable in `tools_list` of function `do_post_hook()` of `hooks/post_gen_project.py`    
 
