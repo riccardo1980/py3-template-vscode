@@ -27,7 +27,7 @@ Parameters meaning:
 Each tool is described with a folder inside `{{cookiecutter.project_slug}}/tools_config`: folder name must be equal to the tool.
 A number of object must be present in the folder:
 - __requirements.txt__: a text file with requirements, one per line
-- __vscode_config.json__: a JSON formatted text file, containing vscode configuratin for that tool
+- __vscode_settings.json__: a JSON formatted text file, containing vscode configuratin for that tool
 - [OPTIONAL] __config_files__: a folder: each file in first level will be copied in root project
 
 In order to support a tool you need to create a folder in `{{cookiecutter.project_slug}}/tools_config` matching the name of the tool.

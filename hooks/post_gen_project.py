@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 import json
 import sys
@@ -5,11 +6,10 @@ import subprocess
 import shutil
 import venv
 import copy
-from typing import List, Type, TypeVar
+from typing import Any, List, Type, Dict, TypeVar
 from pathlib import Path
 
-
-def str2bool(var: str):
+def str2bool(var: str) -> bool:
     """
     String to Boolean
 
@@ -25,7 +25,7 @@ class ExtendedEnvBuilder(venv.EnvBuilder):
     from: https://github.com/LP-CDF/AMi_Image_Analysis/blob/master/Setup.py
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         """
         Initialization
 
@@ -105,7 +105,7 @@ class ExtendedEnvBuilder(venv.EnvBuilder):
             )
 
 
-def venv_create(venv_home: str, **kwargs):
+def venv_create(venv_home: str, **kwargs) -> None:
     """
     Create requested virtualenv
     """
@@ -113,7 +113,7 @@ def venv_create(venv_home: str, **kwargs):
     builder.create(venv_home)
 
 
-def gitignore_config(gitignore_template: str, ignore_list: List[str]):
+def gitignore_config(gitignore_template: str, ignore_list: List[str]) -> None:
     """
     Configure gitignore file
 
@@ -131,7 +131,7 @@ def gitignore_config(gitignore_template: str, ignore_list: List[str]):
             fd.write("{}\n".format(item))
 
 
-def configure_version_control(branch_name="main", msg="first commit"):
+def configure_version_control(branch_name: str="main", msg: str="first commit") -> None:
     """
     Configure git version control
 
@@ -151,7 +151,7 @@ class ToolConfig:
     Info on tool configuration
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         # path to list of config files
         self.tool_config_files: List[str] = []
@@ -160,10 +160,9 @@ class ToolConfig:
         self.requirements: List[str] = []
 
         # dict containing tool settings
-        self.vscode_config: dict = {}
+        self.vscode_settings: Dict[str,Any] = {}
 
-    _T = TypeVar("_T")
-
+    _T = TypeVar("_T", bound='ToolConfig')
     @classmethod
     def from_folder(cls: Type[_T], config_folder) -> _T:
         """
@@ -175,7 +174,7 @@ class ToolConfig:
         Configuration folder must contain:
         - config_files folder: only first level files are considered
         - requirements.txt: list of requirements, adhering requirements.txt style
-        - vscode_config.json: json with configuration, .vscode/config.json style
+        - vscode_settings.json: json with configuration, .vscode/settings.json style
         """
         config = cls()
 
@@ -194,19 +193,19 @@ class ToolConfig:
 
         try:
 
-            vscode_config_file = os.path.join(
-                config_folder, "vscode_config.json"
+            vscode_settings_file = os.path.join(
+                config_folder, "vscode_settings.json"
             )
-            with open(vscode_config_file, "r") as f:
-                config.vscode_config = json.load(f)
+            with open(vscode_settings_file, "r") as f:
+                config.vscode_settings = json.load(f)
 
         except json.JSONDecodeError:
-            if os.path.getsize(vscode_config_file) != 0:
+            if os.path.getsize(vscode_settings_file) != 0:
                 raise
 
         return config
 
-    def __add__(self, other):
+    def __add__(self, other: ToolConfig) -> ToolConfig:
         """
         Add two configuration objects
 
@@ -218,7 +217,7 @@ class ToolConfig:
         new_cfg += other
         return new_cfg
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: ToolConfig) -> ToolConfig:
         """
         In place merge of configuration objects
 
@@ -227,7 +226,7 @@ class ToolConfig:
         """
         self.tool_config_files.extend(other.tool_config_files)
         self.requirements.extend(other.requirements)
-        self.vscode_config = {**self.vscode_config, **other.vscode_config}
+        self.vscode_settings = {**self.vscode_settings, **other.vscode_settings}
         return self
 
     def __repr__(self) -> str:
@@ -236,16 +235,16 @@ class ToolConfig:
         out += self.tool_config_files.__repr__()
         out += "\n\nrequirements:\n"
         out += self.requirements.__repr__()
-        out += "\n\nvscode_config:\n"
-        out += self.vscode_config.__repr__()
+        out += "\n\nvscode_settings:\n"
+        out += self.vscode_settings.__repr__()
 
         return out
 
 
-def do_post_hook():
+def do_post_hook() -> None:
 
     gitignore_template = ".gitignore.template"
-    vscode_config_file = ".vscode/settings.json"
+    vscode_settings_file = ".vscode/settings.json"
     tools_config_folder = "tools_configs"
 
     # Jinja values
@@ -263,11 +262,11 @@ def do_post_hook():
     tools_list = [chosen_linter, chosen_formatter]
     tools_list = list(filter(lambda x: x.lower() not in ["", "no"], tools_list))
 
-    print("Running post-gen hook")
+    print("{}: running post-gen hook".format(__name__))
     # initialize base configuration
     master_cfg = ToolConfig()
-    with open(vscode_config_file, "r") as f:
-        master_cfg.vscode_config = json.load(f)
+    with open(vscode_settings_file, "r") as f:
+        master_cfg.vscode_settings = json.load(f)
 
     # collect configurations from tools
     try:
@@ -317,8 +316,8 @@ def do_post_hook():
 
         ### VSCODE CONFIGURATION
         print("{}: configure vscode".format(__name__))
-        with open(vscode_config_file, "w") as f:
-            json.dump(master_cfg.vscode_config, f, indent=4)
+        with open(vscode_settings_file, "w") as f:
+            json.dump(master_cfg.vscode_settings, f, indent=4)
 
         # ### VERSION CONTROL SETTINGS
         if do_configure_git:
