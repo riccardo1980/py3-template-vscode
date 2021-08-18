@@ -1,1 +1,3 @@
-ignore: {{cookiecutter.virtualenv_name}}
+[flake8]
+exclude = {{cookiecutter.virtualenv_name}}
+max-line-length = 80
