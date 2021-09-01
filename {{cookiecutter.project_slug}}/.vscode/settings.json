@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "{{cookiecutter.virtualenv_name}}/bin/python",
+    "python.defaultInterpreterPath": "{{cookiecutter.virtualenv_name}}/bin/python",
     "python.languageServer": "Pylance",
     "editor.rulers": [ 80 ],
     "python.analysis.extraPaths": [
