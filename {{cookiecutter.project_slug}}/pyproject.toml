@@ -1,0 +1,24 @@
+# mypy options:
+# see https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+check_untyped_defs = true
+no_implicit_optional = true
+strict_optional = true
+
+# [[tool.mypy.overrides]]
+# module = "streamlit"
+# ignore_missing_imports = true
+
+# isort options
+# see: https://pycqa.github.io/isort/docs/configuration/config_files.html
+
+[tool.isort]
+profile = "black"

@@ -1,14 +1,17 @@
 {
     "python.defaultInterpreterPath": "{{cookiecutter.virtualenv_name}}/bin/python",
     "python.languageServer": "Pylance",
-    "editor.rulers": [ 80 ],
+    "editor.rulers": [ 88 ],
     "python.analysis.extraPaths": [
-        "${workspaceFolder}"
+        "{{cookiecutter.package_name}}"
     ],
     "python.analysis.completeFunctionParens": true,
     "python.autoComplete.extraPaths": [
-        "${workspaceFolder}"
+        "{{cookiecutter.package_name}}"
     ],
-    "python.autoComplete.addBrackets": true
+    "python.autoComplete.addBrackets": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black"
 }
 

@@ -275,25 +275,25 @@ def do_post_hook() -> None:
         master_cfg.vscode_settings = json.load(f)
 
     # collect configurations from tools
-    try:
-        print("{}: configuration tools collection".format(__name__))
+    # try:
+    #     print("{}: configuration tools collection".format(__name__))
 
-        for tool in tools_list:
-            print("{}: configure {}".format(__name__, tool))
+    #     for tool in tools_list:
+    #         print("{}: configure {}".format(__name__, tool))
 
-            if tool not in supported_tools:
-                raise Exception("{} tool not supported".format(tool))
+    #         if tool not in supported_tools:
+    #             raise Exception("{} tool not supported".format(tool))
 
-            # get configuration
-            cfg = ToolConfig.from_folder(
-                os.path.join(tools_config_folder, tool)
-            )
+    #         # get configuration
+    #         cfg = ToolConfig.from_folder(
+    #             os.path.join(tools_config_folder, tool)
+    #         )
 
-            master_cfg += cfg
+    #         master_cfg += cfg
 
-    except Exception as e:
-        print("{}: exception caught\nexiting\n{}".format(__name__, e))
-        sys.exit(-1)
+    # except Exception as e:
+    #     print("{}: exception caught\nexiting\n{}".format(__name__, e))
+    #     sys.exit(-1)
 
     print("{}: configuration".format(__name__))
     print("{}:{}".format(__name__, master_cfg))
