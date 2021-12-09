@@ -8,7 +8,7 @@ TEST_SRCS="tests"
 
 set -x
 
-black $SRCS $TEST_SRCS
-isort $SRCS $TEST_SRCS
-mypy $SRCS $TEST_SRCS
-flake8 $SRCS $TEST_SRCS
+black setup.py $SRCS $TEST_SRCS
+isort setup.py $SRCS $TEST_SRCS
+mypy setup.py $SRCS $TEST_SRCS
+flake8 setup.py $SRCS $TEST_SRCS

@@ -1,6 +1,8 @@
+import json
 import os
 import pathlib
-import json
+from typing import Any, Dict, List
+
 import pytest
 from cookiecutter.main import cookiecutter
 
@@ -9,13 +11,13 @@ GITIGNORE = ".gitignore"
 
 
 @pytest.fixture(scope="session")
-def default_values():
+def default_values() -> Any:
     with open("cookiecutter.json") as f:
         return json.load(f)
 
 
 @pytest.fixture(scope="session")
-def create_cookie(tmpdir_factory):
+def create_cookie(tmpdir_factory: Any) -> str:
     """
     cookiecutter run
     """
@@ -31,8 +33,8 @@ def create_cookie(tmpdir_factory):
 
 
 @pytest.fixture(scope="session")
-def content_list(create_cookie):
-    def remove_cookie_dir(text: str, prefix) -> str:
+def content_list(create_cookie: str) -> List[str]:
+    def remove_cookie_dir(text: str, prefix: str) -> str:
         out = text
         if text.startswith(prefix):
             out = text[len(prefix) :]
@@ -51,27 +53,29 @@ def content_list(create_cookie):
 
     # remove leading cookie_dir
     cookie_dir = os.path.join(create_cookie, "")
-    content = [
-        f for f in map(lambda x: remove_cookie_dir(x, cookie_dir), content)
-    ]
+    content = [f for f in map(lambda x: remove_cookie_dir(x, cookie_dir), content)]
 
     return content
 
 
-def test_default_root_folder(content_list, default_values):
+def test_default_root_folder(
+    content_list: List[str], default_values: Dict[str, Any]
+) -> None:
     assert default_values["project_slug"] in content_list
 
 
-def test_default_package_folder(content_list, default_values):
+def test_default_package_folder(
+    content_list: List[str], default_values: Dict[str, Any]
+) -> None:
     assert (
-        os.path.join(
-            default_values["project_slug"], default_values["package_name"]
-        )
+        os.path.join(default_values["project_slug"], default_values["package_name"])
         in content_list
     )
 
 
-def test_default_pip_in_venv_folder(content_list, default_values):
+def test_default_pip_in_venv_folder(
+    content_list: List[str], default_values: Dict[str, Any]
+) -> None:
     interpreters = [
         os.path.join(
             default_values["project_slug"],
@@ -86,7 +90,9 @@ def test_default_pip_in_venv_folder(content_list, default_values):
         assert item in content_list
 
 
-def test_default_interpreter_in_venv_folder(content_list, default_values):
+def test_default_interpreter_in_venv_folder(
+    content_list: List[str], default_values: Dict[str, Any]
+) -> None:
     interpreters = [
         os.path.join(
             default_values["project_slug"],
@@ -101,7 +107,9 @@ def test_default_interpreter_in_venv_folder(content_list, default_values):
         assert item in content_list
 
 
-def test_default_test_tools_in_venv_folder(content_list, default_values):
+def test_default_test_tools_in_venv_folder(
+    content_list: List[str], default_values: Dict[str, Any]
+) -> None:
     interpreters = [
         os.path.join(
             default_values["project_slug"],
@@ -126,7 +134,9 @@ def test_default_test_tools_in_venv_folder(content_list, default_values):
 #     assert default_values['virtualenv_name'] in config['flake8']['exclude']
 
 
-def test_venv_ignored_in_gitignore(create_cookie, default_values):
+def test_venv_ignored_in_gitignore(
+    create_cookie: str, default_values: Dict[str, Any]
+) -> None:
     with open(
         os.path.join(create_cookie, default_values["project_slug"], GITIGNORE)
     ) as f:

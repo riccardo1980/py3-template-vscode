@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-SRCS="{{cookiecutter.package_name}}"
+SRCS="hooks"
 TEST_SRCS="tests"
 
 [ -d $SRCS ] || (echo "Run this script from project root"; exit 1)

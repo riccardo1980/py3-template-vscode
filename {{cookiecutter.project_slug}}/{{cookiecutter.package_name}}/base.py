@@ -1,2 +1,2 @@
-def runme():
+def runme() -> int:
     return 1

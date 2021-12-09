@@ -14,7 +14,7 @@ no_implicit_optional = true
 strict_optional = true
 
 [[tool.mypy.overrides]]
-module = "setuptools"
+module = "cookiecutter.main"
 ignore_missing_imports = true
 
 # isort options
@@ -22,3 +22,4 @@ ignore_missing_imports = true
 
 [tool.isort]
 profile = "black"
+multi_line_output = 3
